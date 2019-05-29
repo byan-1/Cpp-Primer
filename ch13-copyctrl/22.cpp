@@ -6,11 +6,26 @@ class HasPtr
 public:
   HasPtr(const std::string &s = std::string())
       : ps(new std::string(s)), i(0) {}
-  HasPtr(const HasPtr &ori)
-      : ps(new std::string(*ori.ps)), i(ori.i) {}
-  ~HasPtr();
+  HasPtr(const HasPtr &rhs)
+      : ps(new std::string(*rhs.ps)), i(rhs.i) {}
+  ~HasPtr()
+  {
+    delete ps;
+  };
 
-  HasPtr &operator=(const HasPtr &rhs);
+  HasPtr &operator=(const HasPtr &rhs)
+  {
+    // This copy-assignment operator is wrong, see ex13.23 for correct version.
+    // delete ps;
+    // ps = new std::string(*rhs.ps);
+    // i = rhs.i;
+    // return *this;
+    auto newps = new std::string(*rhs.ps);
+    delete ps;
+    ps = newps;
+    i = rhs.i;
+    return *this;
+  };
 
   const std::string &get() const { return *ps; }
   void set(const std::string &s) { *ps = s; }
@@ -19,20 +34,6 @@ private:
   std::string *ps;
   int i;
 };
-
-HasPtr::~HasPtr()
-{
-  delete ps;
-}
-
-HasPtr &HasPtr::operator=(const HasPtr &rhs)
-{
-  // This copy-assignment operator is wrong, see ex13.23 for correct version.
-  delete ps;
-  ps = new std::string(*rhs.ps);
-  i = rhs.i;
-  return *this;
-}
 
 int main()
 {
